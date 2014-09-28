@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        
+    <title>LAURIE TRAN</title>
+
+<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {
+                background-color: rgb(200,200,200);
+                margin: 0px;
+               /* overflow: hidden;*/
+            }
+
+
+            #info {
+                position: absolute;
+                top: 0px; width: 100%;
+                color: black;
+                padding: 5px;
+                font-family:Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size:100px;
+                font-weight: bold;
+                text-align:center;
+                margin-top: 225px;
+            }
+
+        </style>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="css/animate.min.css">
+
+    <!-- Jquery -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/agency.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+</head>
+
+<body id="page-top" class="index">
+    
+    <div id="container"></div>
+        <div id="info"><div class="intro-heading"></div><div class="bounceIn" id="laurie">LAURIE TRAN</div><a href="#services" class="page-scroll btn btn-xl">FULL STACK WEB DEVELOPER</a></div>
+
+
+
+    <!-- Header -->
+
+<!-- <header>
+        <div class="container">
+            <div class="bounceIn" id="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading">LAURIE TRAN</div>
+                <a href="#services" class="page-scroll btn btn-xl">FULL STACK WEB DEVELOPER</a>
+            </div>
+        </div>
+    </header> -->
+
+
+<script src="js/three.min.js"></script>
+
+        <script>
+
+            var camera, scene, renderer;
+
+            var texture_placeholder,
+            isUserInteracting = false,
+            onMouseDownMouseX = 0, onMouseDownMouseY = 0,
+            lon = 90, onMouseDownLon = 0,
+            lat = 0, onMouseDownLat = 0,
+            phi = 0, theta = 0,
+            target = new THREE.Vector3();
+
+            init();
+            animate();
+
+            function init() {
+
+                var container, mesh;
+
+                container = document.getElementById( 'container' );
+
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+
+                scene = new THREE.Scene();
+
+                texture_placeholder = document.createElement( 'canvas' );
+                texture_placeholder.width = 128;
+                texture_placeholder.height = 128;
+
+                var context = texture_placeholder.getContext( '2d' );
+                context.fillStyle = 'rgb( 200, 200, 200 )';
+                context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
+
+                var materials = [
+
+                    loadTexture( 'img/skybox/px.jpg' ), // right
+                    loadTexture( 'img/skybox/nx.jpg' ), // left
+                    loadTexture( 'img/skybox/py.jpg' ), // top
+                    loadTexture( 'img/skybox/ny.jpg' ), // bottom
+                    loadTexture( 'img/skybox/pz.jpg' ), // back
+                    loadTexture( 'img/skybox/nz.jpg' )  // front
+
+                ];
+
+                mesh = new THREE.Mesh( new THREE.BoxGeometry( 300, 300, 300, 7, 7, 7 ), new THREE.MeshFaceMaterial( materials ) );
+                mesh.scale.x = - 1;
+                scene.add( mesh );
+
+                renderer = new THREE.CanvasRenderer();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+                container.appendChild( renderer.domElement );
+
+                document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+                document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+                document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+
+                document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+                document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+                //
+
+                window.addEventListener( 'resize', onWindowResize, false );
+
+            }
+
+            function onWindowResize() {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }
+
+            function loadTexture( path ) {
+
+                var texture = new THREE.Texture( texture_placeholder );
+                var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5 } );
+
+                var image = new Image();
+                image.onload = function () {
+
+                    texture.image = this;
+                    texture.needsUpdate = true;
+
+                };
+                image.src = path;
+
+                return material;
+
+            }
+
+            function onDocumentMouseDown( event ) {
+
+                event.preventDefault();
+
+                isUserInteracting = true;
+
+                onPointerDownPointerX = event.clientX;
+                onPointerDownPointerY = event.clientY;
+
+                onPointerDownLon = lon;
+                onPointerDownLat = lat;
+
+            }
+
+            function onDocumentMouseMove( event ) {
+
+                if ( isUserInteracting === true ) {
+
+                    lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
+                    lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+
+                }
+
+            }
+
+            function onDocumentMouseUp( event ) {
+
+                isUserInteracting = false;
+
+            }
+
+            function onDocumentMouseWheel( event ) {
+
+                camera.fov -= event.wheelDeltaY * 0.05;
+                camera.updateProjectionMatrix();
+
+            }
+
+
+            function onDocumentTouchStart( event ) {
+
+                if ( event.touches.length == 1 ) {
+
+                    event.preventDefault();
+
+                    onPointerDownPointerX = event.touches[ 0 ].pageX;
+                    onPointerDownPointerY = event.touches[ 0 ].pageY;
+
+                    onPointerDownLon = lon;
+                    onPointerDownLat = lat;
+
+                }
+
+            }
+
+            function onDocumentTouchMove( event ) {
+
+                if ( event.touches.length == 1 ) {
+
+                    event.preventDefault();
+
+                    lon = ( onPointerDownPointerX - event.touches[0].pageX ) * 0.1 + onPointerDownLon;
+                    lat = ( event.touches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+
+                }
+
+            }
+
+            function animate() {
+
+                requestAnimationFrame( animate );
+                update();
+
+            }
+
+            function update() {
+
+                if ( isUserInteracting === false ) {
+
+                    lon += 0.1;
+
+                }
+
+                lat = Math.max( - 85, Math.min( 85, lat ) );
+                phi = THREE.Math.degToRad( 90 - lat );
+                theta = THREE.Math.degToRad( lon );
+
+                target.x = 500 * Math.sin( phi ) * Math.cos( theta );
+                target.y = 500 * Math.cos( phi );
+                target.z = 500 * Math.sin( phi ) * Math.sin( theta );
+
+                camera.lookAt( target );
+
+                renderer.render( scene, camera );
+
+            }
+
+        </script>
+    </body>
+</html>
+
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">L.Tran</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#services">Services</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#portfolio">Portfolio</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#team">About</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+<!--   <header class="home">
+    <div id="blackBackdrop">
+      <div class="bounceIn" id="introText">  
+        <div id="introName">
+          Laurie Tran
+        </div>
+        <h4 id="introDescription">
+          Full Stack Developer 
+        </h4>
+      </div>
+      <div id="landing-content">
+      </div>
+      <div id="movement2">
+      </div>
+      <div id="movement3">
+      </div>       
+    </div>
+  </header> -->
+
+    <!-- Services Section -->
+    <section id="services">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                 <h1 class="section-heading">What I Offer</h1><br>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-user fa-stack-1x fa-inverse"></i>
+                        </span>
+                    <h4 class="service-heading">FRONT END</h4>
+                        <p class="text-muted">JavaScript, JQuery, AngularJS, HTML, CSS, Bootstrap
+                        </p>
+                </div>
+                <div class="col-md-4">
+                    <p class="bounceIn">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-laptop fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </p>
+                    <h4 class="service-heading">RESPONSIVE DESIGN</h4><p class="text-muted">Websites, Mobile, IPADs, Netbooks</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="bounceIn">
+                        <span class="fa-stack fa-5x">
+                            <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fa fa-lock fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </p>
+                    <h4 class="service-heading">BACK END</h4>
+                   <p class="text-muted">RUBY on Rails, BDD/TDD, PostgreSQL, Firebase, Linux</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid Section -->
+    <section id="portfolio" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="bounceIn" id="section-heading">Works</h2>
+                    <h3 class="section-subheading text-muted"></h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/LaurieShopping.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Super Market Shopping</h4>
+                        <p class="text-muted">Real Time To-Do List</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal2" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/LaurieIncit.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Entrepreneur It!</h4>
+                        <p class="text-muted">Pinterest Clone MVC</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal3" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/LaurieTickget.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Tick.Get</h4>
+                        <p class="text-muted">Concert Listings MVC</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal4" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/LaurieTechmatch.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Tech.Match</h4>
+                        <p class="text-muted">Connecting Job Seekers to Opportunities</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal5" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/LaurieIUC.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>IUC</h4>
+                        <p class="text-muted">Connecting Students to Universities</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#portfolioModal6" class="portfolio-link" data-toggle="modal">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content">
+                                <i class="fa fa-plus fa-3x"></i>
+                            </div>
+                        </div>
+                        <img src="img/portfolio/laurieWise.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Headhunter</h4>
+                        <p class="text-muted">Interview & Resume Advices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+    </section>
+
+    
+    <!-- Team Section -->
+    <section id="team" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">About</h2>
+                    <h3 class="section-subheading text-muted"></h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="" class="img-responsive img-circle" alt="">
+                        <h4></h4>
+                        <p class="text-muted"></p>
+                        <ul class="list-inline social-buttons">
+                       
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="img/team/laurie2.jpg" class="img-responsive img-circle" alt="">
+                        <h4>Laurie Tran</h4>
+                        <p class="text-muted">Full Stack Web Developer</p>
+                        <ul class="list-inline social-buttons">
+                            <li><a href="https://twitter.com/ldxtran"><i class="fa fa-twitter"></i></a>
+                            </li>
+                            <li><a href="https://www.facebook.com/thewomencoders"><i class="fa fa-facebook"></i></a>
+                            </li>
+                            <li><a href="https://www.linkedin.com/in/lauriedtran/"><i class="fa fa-linkedin"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="" class="img-responsive img-circle" alt="">
+                        <h4></h4>
+                        <p class="text-muted"></p>
+                        <ul class="list-inline social-buttons">
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <p class="large text-muted">Hi! <br/>
+                     I'm Laurie and I'm a full stack developer in Ruby and the Co-Founder of Women Coders, an organization aim towards giving women a voice in the tech industry. As a developer, I'm always trying to implement the latest technology so my work will have that wow factor. What am I currently playing with? Three.js!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Contact</h2>
+                    <h4 class="section-heading"></h4><></h4>
+                      <h4 class="section-heading">Laurie Tran</h4>
+                    <h4 class="section-heading">LaurieDTran@gmail.com</h4>
+                      <h4 class="section-heading">Southern California</h4>
+                        <a href="img/portfolio/LaurieTran.2014.pdf" target="_blank" class="btn btn-default btn-lg">View Résumé</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form name="sentMessage" id="contactForm" novalidate>
+                        <div class="row">
+                       
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="copyright">Copyright &copy; Laurie Tran 2014</span>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline social-buttons">
+                        <li><a href="https://twitter.com/ldxtran"><i class="fa fa-twitter"></i></a>
+                        </li>
+                        <li><a href="https://www.facebook.com/thewomencoders"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li><a href="https://www.linkedin.com/in/lauriedtran/"><i class="fa fa-linkedin"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </footer>
+
+    <!-- Portfolio Modals -->
+    <!-- Use the modals below to showcase details about your portfolio projects! -->
+
+    <!-- Portfolio Modal 1 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            <h2>Laurie's Supermarket Helper</h2>
+                            <p class="item-intro text-muted">Real Time Shopping Web App </p>
+                            <a href="http://laurieshopping.herokuapp.com/"><img class="img-responsive" src="img/portfolio/LaurieShopping.PNG" alt=""></a>
+                            <p><strong>Built with: </strong>HTML | CSS | JavaScript | Angular JS</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://laurieshopping.herokuapp.com/">Laurieshopping</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Modal 2 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <h2>Entrepeneur It!</h2>
+                            <p class="item-intro text-muted">Platform where users can browse through unusual entrepreneurs and their stories.</p>
+                              <a href="http://laurieincit.herokuapp.com/"><img class="img-responsive img-centered" src="img/portfolio/LaurieIncit.PNG" alt="">
+                            </a><p><strong>Built with: </strong>HTML | CSS | JavaScript | Angular JS | Jquery | PostgresSQL</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://laurieincit.herokuapp.com/">Entrepreneur It</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Portfolio Modal 3 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            <h2>Tick.Get</h2>
+                            <p class="item-intro text-muted">App where users can sell concert tickets.</p>
+                             <a href="http://tick-get.herokuapp.com/"><img class="img-responsive img-centered" src="img/portfolio/LaurieTickget.PNG" alt="">
+                               </a><p><strong>Built with: </strong>HTML | CSS | JavaScript | Ruby on Rails | Bootstrap | PostgresSQL</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://tick-get.herokuapp.com/">Tick.Get</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Modal 4 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            <h2>TechMatch</h2>
+                            <p class="item-intro text-muted">Uses Dice API to match developers with jobs.</p>
+                            <a href="http://tech-match.herokuapp.com/"><img class="img-responsive img-centered" src="img/portfolio/LaurieTechmatch.PNG" alt="">
+                            </a><p><strong>Built with: </strong>HTML | CSS | JavaScript | Ruby on Rails | Bootstrap | PostgresSQL</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://tech-match.herokuapp.com/">TickMatch</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Modal 5 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            <h2>International University Connection</h2>
+                            <p class="item-intro text-muted">Helping students find their best match universities.</p>
+                            <a href="http://iuc.herokuapp.com/#/home"><img class="img-responsive img-centered" src="img/portfolio/LaurieIUC.PNG" alt="">
+                            </a><p><strong>Built with: </strong>HTML | CSS | JavaScript | Ruby on Rails | Bootstrap | AngularJs | PostgresSQL</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://iuc.herokuapp.com/#/home">IUC</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Modal 6 -->
+    <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+            <div class="close-modal" data-dismiss="modal">
+                <div class="lr">
+                    <div class="rl">
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="modal-body">
+                            <!-- Project Details Go Here -->
+                            <h2>Headhunter</h2>
+                            <p class="item-intro text-muted">A blog that services job seekers looking for resume and interview advices.</p>
+                            <a href="http://www.thewiseheadhunter.com/"><img class="img-responsive img-centered" src="img/portfolio/laurieWise.PNG" alt="">
+                            </a><p><strong>Built with: </strong>Wordpress | Php</p>
+                            <p>
+                                <strong>Click here to go to site!<br/><a href="http://www.thewiseheadhunter.com/">Headhunter</a> </strong></p>
+                            <ul class="list-inline">
+                            </ul>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> Close Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/agency.js"></script>
+
+</body>
+
+</html>
