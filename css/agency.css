@@ -273,7 +273,7 @@ header {
     text-align: center;
     color: #fff;
     background-attachment: scroll;
-    background-image: url(../img/header-bg.jpg);
+    background-image: url(../img/Red.jpg);
     background-position: center center;
     background-repeat: none;
     -webkit-background-size: cover;
@@ -449,6 +449,7 @@ section h3.section-subheading {
 .team-member img {
     margin: 0 auto;
     border: 7px solid #fff;
+    margin-top: -15%;
 }
 
 .team-member h4 {
